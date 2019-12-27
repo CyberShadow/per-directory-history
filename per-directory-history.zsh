@@ -6,22 +6,35 @@
 [[ -z $PER_DIRECTORY_HISTORY_BASE ]] && PER_DIRECTORY_HISTORY_BASE="$HOME/.zsh_history_dirs"
 [[ -z $PER_DIRECTORY_HISTORY_FILE ]] && PER_DIRECTORY_HISTORY_FILE="zsh-per-directory-history"
 [[ -z $PER_DIRECTORY_HISTORY_TOGGLE ]] && PER_DIRECTORY_HISTORY_TOGGLE='\el'
+[[ -z $PER_DIRECTORY_HISTORY_NEW_PROMPT ]] && PER_DIRECTORY_HISTORY_NEW_PROMPT=true
 
 #-------------------------------------------------------------------------------
 # toggle global/directory history used for searching - alt-l by default
 #-------------------------------------------------------------------------------
 
 function per-directory-history-toggle-history() {
+	local message
+
 	if $_per_directory_history_is_global
 	then
 		_per-directory-history-set-directory-history
-		print -n "\e[2K\rusing local history\n"
+		message="using local history"
 	else
 		_per-directory-history-set-global-history
-		print -n "\e[2K\rusing global history\n"
+		message="using global history"
 	fi
-	zle .push-line
-	zle .accept-line
+
+	if $PER_DIRECTORY_HISTORY_NEW_PROMPT
+	then
+		print -n "\e[2K\r$message\n"
+		zle .push-line
+		zle .accept-line
+	elif zle
+	then
+		zle -Rc "" $message
+	else
+		echo $message
+	fi
 }
 
 autoload per-directory-history-toggle-history

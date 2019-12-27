@@ -59,6 +59,10 @@ Configuration
   should be set to something that's unlikely to occur as a path
   component in any paths you intend to visit on your filesystem.
 
+* `PER_DIRECTORY_HISTORY_NEW_PROMPT` is a shell variable which defines if
+  new prompt is created when the history is toggled. Set to false to only
+  show a message below the prompt.
+
 * `per-directory-history-toggle-history` is the function to toggle the
   history mode.
 
