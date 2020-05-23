@@ -102,7 +102,7 @@ function _per-directory-history-preexec() {
 function _per-directory-history-set-directory-history() {
 	fc -P
 
-	mkdir -p ${_per_directory_history_path:h}
+	[ -d ${_per_directory_history_path:h} ] || mkdir -p ${_per_directory_history_path:h}
 	fc -p $_per_directory_history_path
 	_per_directory_history_is_global=false
 }
