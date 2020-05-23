@@ -47,12 +47,16 @@ bindkey $PER_DIRECTORY_HISTORY_TOGGLE per-directory-history-toggle-history
 
 _per_directory_history_path="$PER_DIRECTORY_HISTORY_BASE${PWD:A}/$PER_DIRECTORY_HISTORY_FILE"
 
+function _per-directory-history-ensure-path() {
+	[ -d ${_per_directory_history_path:h} ] || mkdir -p ${_per_directory_history_path:h}
+}
+
 function _per-directory-history-change-directory() {
 	_per_directory_history_path="$PER_DIRECTORY_HISTORY_BASE${PWD:A}/$PER_DIRECTORY_HISTORY_FILE"
 	if ! $_per_directory_history_is_global
 	then
 		fc -P
-		mkdir -p ${_per_directory_history_path:h}
+		_per-directory-history-ensure-path
 		fc -p $_per_directory_history_path
 	fi
 }
@@ -79,7 +83,7 @@ function _per-directory-history-preexec() {
 			local fn
 			if $_per_directory_history_is_global
 			then
-				mkdir -p ${_per_directory_history_path:h}
+				_per-directory-history-ensure-path
 				fn=$_per_directory_history_path
 			else
 				fn=$_per_directory_history_main_histfile
@@ -102,7 +106,7 @@ function _per-directory-history-preexec() {
 function _per-directory-history-set-directory-history() {
 	fc -P
 
-	[ -d ${_per_directory_history_path:h} ] || mkdir -p ${_per_directory_history_path:h}
+	_per-directory-history-ensure-path
 	fc -p $_per_directory_history_path
 	_per_directory_history_is_global=false
 }
