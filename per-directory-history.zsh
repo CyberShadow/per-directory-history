@@ -26,7 +26,9 @@ function per-directory-history-toggle-history() {
 
 	if $PER_DIRECTORY_HISTORY_NEW_PROMPT
 	then
-		print -n "\e[2K\r$message\n"
+		# Don't print while zle owns the display (it may redraw the
+		# prompt on accept); print from precmd instead.
+		_per_directory_history_message=$message
 		zle .push-line
 		zle .accept-line
 	elif zle
@@ -117,12 +119,22 @@ function _per-directory-history-set-global-history() {
 	_per_directory_history_is_global=true
 }
 
+function _per-directory-history-precmd() {
+	if [[ -n $_per_directory_history_message ]]
+	then
+		# Replace the empty prompt line accepted by the toggle widget.
+		print -n "\e[A\e[2K\r$_per_directory_history_message\n"
+		unset _per_directory_history_message
+	fi
+}
+
 
 #add functions to the exec list for chpwd and zshaddhistory
 autoload -U add-zsh-hook
 add-zsh-hook chpwd _per-directory-history-change-directory
 add-zsh-hook zshaddhistory _per-directory-history-addhistory
 add-zsh-hook preexec _per-directory-history-preexec
+add-zsh-hook precmd _per-directory-history-precmd
 
 _per_directory_history_main_histfile=$HISTFILE
 unset HISTFILE
